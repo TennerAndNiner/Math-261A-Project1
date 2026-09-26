@@ -1,26 +1,24 @@
 ---
-title: "Math 261A Project 1 Version 1: Bodyweight and Weightlifting"
+title: "Math 261A Project1Version1.2"
 author: "Vinhem Duong"
-format: html
+format: pdf 
+bibliography: references.bib
+cite-method: biblatex
 editor: visual
 date: Sep 25, 2026
 ---
+
+# Abstract
+
+In a sample of male power-lifters and their scores, is there a positive relationship between the body weight of the power lifter and the score of the exercise that he performs? This report will showcase whether or not there is a relationship and the deeper meanings behind it. Afterwards, we will discuss the implications and whether or not lifters should factor in their body weight when weightlifting.
 
 # Terminology
 
 Before, we get into the report, it's important we discuss the terms that the weightlifting community uses. The highest weight that a person can lift is called a "personal record" or "PR" for short. These scores were obtained from weightlifters in competition with witnesses. We will use "PR" to refer to the highest weight a lifter can perform.
 
-# Abstract
-
-In a sample of male power-lifters and their scores, is there a positive relationship between the body weight of the power lifter and the PR of the exercise that he performs? This report will showcase whether or not there is a relationship and the deeper meanings behind it. Afterwards, we will discuss the implications and whether or not lifters should factor in their body weight when weightlifting.
-
 # Data
 
-```{r}
-my_data <- read.csv("/Users/vinhemduong/R_Code/Project/openpl_sample_male.csv")
-```
-
-The data is sample of male weightlifters extracted from the Open Powerlifting Data Service. The data columns are listed as names, age, AgeClass, bodyweight(kilograms), squat PR, bench PR, deadlift PR, total PR (kilograms), place and date. There is also another set of columns referred to as Wilks, Dots, Glossbrenner and Goodlift. These are powerlifiting scores. They take the lifter's bodyweight and total PR to form a score to represent the weightlifter's relative strength . Already, weightlifters have different bodyweights and performers must take that into account. But whether or not the bodyweight can affect lifting power is a question we must answer.
+The data is sample of male weightlifters extracted from the Open Powerlifting Data Service [@mainfile]. The data columns are listed as names, age, AgeClass, bodyweight(kilograms), squat PR, bench PR, deadlift PR, total PR (kilograms), place and date. There is also another set of columns referred to as Wilks, Dots, Glossbrenner and Goodlift. These are powerlifiting scores. They take the lifter's bodyweight and total PR to form a score to represent the weightlifter's relative strength . Already, weightlifters have different bodyweights and performers must take that into account. But whether or not the bodyweight can affect lifting power is a question we must answer.
 
 Age is a very important variable in weightlifting. Age gives the weightlifter experience and natural strength. Generally, humans grow stronger until they reach their mid 40s. Also age can determine how the body repairs muscles and perform functions. Each weightlifter is placed into an AgeClass depending on his age. For the purpose of accuracy in comparision, we have decided to only select one AgeClass, weightlifters in their 45-59 age range as data.
 
@@ -177,8 +175,6 @@ Perhaps, because someone with a higher bodyweight, he assumes that he can lift h
 
 # References
 
-<https://data.scorenetwork.org/powerlifting/openpowerlifting.html>
-
-The csv file chosen was specifically
+\printbibliography
 
 This document was coded in R in a Quarto file.
