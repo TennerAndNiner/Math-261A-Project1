@@ -1,0 +1,184 @@
+---
+title: "Math 261A Project 1 Version 1: Bodyweight and Bench Press"
+author: "Vinhem Duong"
+format: html
+editor: visual
+date: Sep 25, 2026
+---
+
+# Terminology
+
+Before, we get into the report, it's important we discuss the terms that the weightlifting community uses. The highest weight that a person can lift is called a "personal record" or "PR" for short. These scores were obtained from bodylifters in competition with witnesses. We will use "PR" to refer to the highest weight a lifter can perform.
+
+# Abstract
+
+In a sample of male power-lifters and their scores, is there a positive relationship between the body weight of the power lifter and the PR of the exercise that he performs? This report will showcase whether or not there is a relationship and the deeper meanings behind it. Afterwards, we will discuss the implications and whether or not lifters should factor in their body weight when weightlifting.
+
+# Data
+
+```{r}
+my_data <- read.csv("/Users/vinhemduong/R_Code/Project/openpl_sample_male.csv")
+```
+
+The data is sample of male weightlifters extracted from the Open Powerlifting Data Service. The data columns are listed as names, age, AgeClass, bodyweight(kilograms), squat PR, bench PR, deadlift PR, total PR (kilograms), place and date. There is also another set of columns referred to as Wilks, Dots, Glossbrenner and Goodlift. These are powerlifiting scores. They take the lifter's bodyweight and total PR to form a score to represent the weightlifter's relative strength . Already, weightlifters have different bodyweights and performers must take that into account. But whether or not the bodyweight can affect lifting power is a question we must answer.
+
+Age is a very important variable in weightlifting. Age gives the weightlifter experience and natural strength. Generally, humans grow stronger until they reach their mid 40s. Also age can determine how the body repairs muscles and perform functions. Each weightlifter is placed into an AgeClass depending on his age. For the purpose of accuracy in comparision, we have decided to only select one AgeClass, weightlifters in their 45-59 age range as data.
+
+Each lifter is using standard equipment such as bare knees, knee sleeves and single-polyester suits.
+
+Bodyweight is also a column we should pay attention. Let us remember that these are the weights of professional lifters. They have already built up muscle mass and have bodyweight much greater than the normal person.
+
+The data that we will use to compare with bodyweight is the column total. The column total represents the sum of all the PRs for squat, bench and dead lift. The columns for squat PR, bench PR and deadlift PR are recorded in competitions. They represent the highest weight a lifter can perform in an exercise. There is a limitation with this data. For example, a lifter might excel at a bench press but do poorly on squat and deadlift. His total score can be equal or greater to other lifters with superior scores in squat and deadlift. This can skew and misrepresent the data. Nevertheless, total will be used as we want to find a way to represent full strength.
+
+# Introduction
+
+The rise of weightlifting in America has generated new questions about weightlifting and its connection to body weight. As everyone is different and all want to pursue weightlifting, how can we truly know our limit with lifting weights. My main motivation in this paper is to determine if there is a positive relationship between the natural weight of the individual and the personal record of his exercise, to determine if bodyweight plays a role in weightlifting.
+
+Some people have criticized the impact of bodyweight on weightlifting. Some people believe that their is no limit and regardless of the weight you are born with you can lift higher weights. They state regardless of anyone's initial bodyweight, with practice and time, they are able to reach high personal records. A greater bodyweight may give someone an advantage, but does not negate the importance of practice and time.
+
+However, some people believe, that there is a natural limit to weightlifting depending on the weight you were born with. Your body weight could determine where you begin and how you end. Although the question is regarded as simple, and could be answered anecdotally, we should use data and plotting to determine what the true answer is.
+
+The knowledge gap in this paper is that we are not truly certain if our natural weight will affect our personal record in weightlifting. Say I am a 100lb man. Can my initial weight affect how much I lift in the future? Or am I doomed to hit a natural limit?
+
+The structure of the paper is very simple, the introduction, the data, the plot and the analysis regarding the data. To perform the analysis, we will create 3 visual plots and interpret them. We will create a simple linear regression plot, a residual plot and a QQplot. This question has been very controversial in the weightlifting community. To see the relationship, we will use a linear regression plot to examine it.
+
+With the models, we produced we have discovered that there is a connection between the body weight of the lifter and his competition score. This would imply that heavier individuals are able to lift heavier weights, however there are some lifters that have managed to gain higher competition scores in spite of their weights.
+
+# Methods
+
+As the assignment requested I performed a simple linear regression on the data. I wanted to see if there is a positive relationship between the weight of the lifter and the personal record of the exercise. The linear regression line is computed by finding the slope, intercept and plotting a line on the scatterplot. The limitation I feel with this method is the data that we have.
+
+$$y = \beta_0 + \beta_1x$$
+
+For the residual, we want to find the difference between the predicted value and the actual value.
+
+$$r_i = y_i - \hat{y_i}$$
+
+$y_i$ represents the predicted value, whilst $\hat{y_i}$ represents the actual value.
+
+The next method we will use is the QQ plot. We can begin by creating quartiles and determine if each residuals is able to fit in it.
+
+# Results
+
+## Linear Regression Plot
+
+```{r}
+#| echo: false
+library(ggplot2)
+my_data <- read.csv("/Users/vinhemduong/R_Code/Project/openpl_sample_male.csv")
+
+my_data <- na.omit(my_data)
+
+fortyGroup <- my_data[my_data$AgeClass == as.character("45-49"),]
+squat <- fortyGroup$Squat
+bench <- fortyGroup$Bench
+deadlift <- fortyGroup$Deadlift
+weight <- fortyGroup$BodyweightKg
+#wilks <- fortyGroup$Wilks
+#dots <- fortyGroup$Dots
+total <- fortyGroup$TotalKg
+
+
+mod <- lm(formula = total ~ weight)
+
+intercept <- mod$coefficients[1]
+slope <- mod$coefficients[2]
+
+ggp <- ggplot(data = fortyGroup, aes(x = weight, y = total)) +
+  geom_point() + labs(title = "Age:(45 - 49) Male Lifters Bodyweight Kg vs Total Kg", x ="Bodyweight (Kg)", y = "PR Bench Press")
+
+ggp + geom_abline(intercept = intercept, slope = slope, color = "red")
+```
+
+A clear relationship between bodyweight and the competition record of the bench press exists. The heavier you are the more likely you are able to lift. However, there are some caveats here. It's not a perfect linear regression model. There are some lifters with lower bodyweights than others that have set strong records. By contrast, there are some lifters with higher bodyweights than others that have lower records than other people.
+
+## Residual Plot
+
+```{r}
+#| echo: false
+library(ggplot2)
+my_data <- read.csv("/Users/vinhemduong/R_Code/Project/openpl_sample_male.csv")
+
+my_data <- na.omit(my_data)
+
+fortyGroup <- my_data[my_data$AgeClass == as.character("45-49"),]
+squat <- fortyGroup$Squat
+bench <- fortyGroup$Bench
+deadlift <- fortyGroup$Deadlift
+weight <- fortyGroup$BodyweightKg
+#wilks <- fortyGroup$Wilks
+#dots <- fortyGroup$Dots
+total <- fortyGroup$TotalKg
+
+
+mod <- lm(formula = TotalKg ~ BodyweightKg, data = fortyGroup, na.action = na.exclude)
+
+intercept <- mod$coefficients[1]
+slope <- mod$coefficients[2]
+
+fortyGroup$predicted <- fitted.values(mod)
+fortyGroup$residuals <- residuals(mod)
+ggplot(data = fortyGroup, aes(x = predicted, y = residuals)) + geom_smooth(formula = y ~ x, method = "lm", se = F) + labs(title = "Age:(45 - 49) Male Lifters Residual Plot", x = "Predicted", y = "Residuals") + geom_point(color = "black", alpha = 0.6) + geom_hline(yintercept = 0,linetype = "dashed")
+```
+
+Most of the points congregate near the line, but there are still strong difference between the predicted values and actual values. A positive relationship exists between the bodyweight and the personal record of the weightlifter but exceptions still exist.
+
+## QQ-Plot
+
+```{r}
+#| echo: false
+library(ggplot2)
+my_data <- read.csv("/Users/vinhemduong/R_Code/Project/openpl_sample_male.csv")
+
+my_data <- na.omit(my_data)
+
+fortyGroup <- my_data[my_data$AgeClass == as.character("45-49"),]
+squat <- fortyGroup$Squat
+bench <- fortyGroup$Bench
+deadlift <- fortyGroup$Deadlift
+weight <- fortyGroup$BodyweightKg
+#wilks <- fortyGroup$Wilks
+#dots <- fortyGroup$Dots
+total <- fortyGroup$TotalKg
+
+
+mod <- lm(formula = TotalKg ~ BodyweightKg, data = fortyGroup, na.action = na.exclude)
+
+intercept <- mod$coefficients[1]
+slope <- mod$coefficients[2]
+
+#ggp <- ggplot(data = fortyGroup, aes(x = weight, y = bench)) +
+#geom_point() + labs(title = "Male Lifters Bodyweight Kg vs Bench Press")
+
+#ggp + geom_abline(intercept = intercept, slope = slope, color = "red")
+
+#plot(weight, squat)
+
+#abline(a = mod$coefficients[1], b = mod$coefficients[2])
+
+fortyGroup$predicted <- fitted.values(mod)
+fortyGroup$residuals <- residuals(mod)
+#qplot(fortyGroup$predicted, fortyGroup$residuals) + geom_smooth(method = "lm", se = F)
+
+qqp <- ggplot(data = fortyGroup, aes(sample = residuals)) + stat_qq(color = "steelblue") + stat_qq_line(color = "red", linewidth = 1) + 
+  theme_minimal() + ggtitle("Q-Q Plot") + labs(x = "Quartiles", y = "Residuals")
+qqp
+```
+
+Many of the points follow the pattern of the line. Since the points are linear, we can say that the data will follow a normal distribution.
+
+For each exercise, there is a positive relationship between the natural weight and the highest score the weightlifter can lift. However there are some caveats. The relationship is not so clear cut, a positive relationship is formed, but there are variances and other samples that showcase a different idea.
+
+# Discussion
+
+A positive relationship exists between the weight of the lifter and how much he can bench press. However, to be fair we are dealing with experienced lifters. These are lifters aged 45-49, therefore they must have plenty of experience with them and obtained muscle mass. This could mean that their weight could correspond to their personal record. However, it is not a clear cut relationship, powerlifters can gain muscle mass, but also lose fat which wouldn't change their weight. Some lifters have personal records much higher than others. Most likely with practice, they get use to heavier weights and are able to push beyond their natural limit.
+
+Perhaps, because someone with a higher bodyweight, he assumes that he can lift heavier weights and decides to do so, contributing towards the idea that heavier people and lift heavier weights naturally.
+
+# References
+
+<https://data.scorenetwork.org/powerlifting/openpowerlifting.html>
+
+The csv file chosen was specifically
+
+This document was coded in R in a Quarto file.
