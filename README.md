@@ -25,6 +25,9 @@ I've also had assistance with other classmates which I will not name here, but o
 
 This project contains an MIT License.
 
+Project1Version1_2.pdf and Project1Version1_2.qmd are both the main files for Project 1 Version 2. Unfortunately, I wasn't able to use gitignore to remove Project1Version1.
+
+
 This project contains two quarto files, an html file and some sample code for the project. The csv file which was used for the data is included here.
 
 There are actually two quarto files.
