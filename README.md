@@ -4,7 +4,10 @@ Author: Vinhem Duong
 
 Class: Math 261A
 
-Date: September 25, 2026
+Date: September 25, 2026 - October 12, 2026
+
+Updated Version Included: Project1 Version 2 by Oct 12, 2026
+
 
 ## Data
 
