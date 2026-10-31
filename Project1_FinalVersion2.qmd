@@ -1,0 +1,289 @@
+---
+title: "The Limits Of Linear Regression in Powerlifting Modeling"
+author:
+  - name: "Vinhem Duong"
+    affiliation: 
+      - name: San Jose State University
+      - department: Math 261A, Professor Peter Gao
+format: 
+  pdf:
+    colorlinks: true
+    urlcolor: blue
+bibliography: /Users/vinhemduong/R_Code/Project/references.bib
+cite-method: biblatex
+abstract: "In a data sample of 1000 male power-lifters aged (24-39), we ask ourselves what is the nature of the relationship between their bodyweight and their PRs (highest weight they can perform on an exercise) for squat, deadlift and bench press? This report will use linear regression and demonstrate why it is not effective tool. We demonstrate why the relationship is not linear to give insight and showcase the pitfalls of linear regression. This project includes a linear regression plot, residual plot and a QQ Plot to determine the effectiveness of linear regression. We fitted a linear regression using body weight as a predictor and the combined total PR of all the exercises. We recieved a linear regression line of Y = 310.30 + 2.8X. After the experiment, with the insight of the residual plot and QQPlot, we have discovered why linear regression is not really viable and that the relationship requires a more advanced model."
+editor: visual
+link-citations: true
+date: Oct 30, 2026
+---
+
+# Introduction
+
+One of the most pressing issues in the world of weightlifting, is to model the relationship between body weight and the weight of the exercise, a lifter performs. Some people want to know if there is a limit. Some people want to see a clear relationship, so they can make changes to hit their goals quickly. However, what we don't know is the nature of that relationship. Is it really linear or is it quadratic? What is the exact relationship? Or does it depend on the individual? The difficulty of this question is compounded by the complexity inherent in weightlifting. It is not just bodyweight that affects the strength of the exercise. Age, biological sex, health, grip strength, technique and years of experience can all be important factors in weightlifting. Despite this, we want to keep examining the relationship between body weight and weight of the exercise to get further insight.
+
+Contemporary research has shown depending on your body weight, there is a natural relationship with how much you can lift even with extensive training. [@InfluenceOfBodySize] This is because the bodyweight you have affects how much you naturally lift due to muscle mass and your physique will determine lifting technique. Amongst professional scholars [@AdjustingModel] a model has been attempted to construct a vision based on supposed bodyweight and total strength. Models such as allometric scaling. Of course, everyone is different and there are those who can exceed their supposed natural limit, so we can expect outliers in any model.
+
+Most people agree that the relationship between body weight and the weight of any exercise is for certain not "linear". [@AdjustingModel]. "Linear" as in not being able to use linear regression for it. This is due to the inherent complexity of the issue. Regardless, for this project we want to use linear regression to understand why it fails and what we need to make a more effective model.
+
+We can try to bring insight to this by examining what the relationship looks like using regression tools. Using sample-data of power lifters. We will use linear regression, residuals plotting, and Quantile-Quantile plot (QQplot). Using linear regression, we can create a relationship that can determine how much more weight, powerlifters can lift based on bodyweight increase. We can do this be creating a model between the bodyweight of experienced powerlifters with their total weight of all the exercises. The experienced powerlifters weights will give us better insight than the average person, because they are closer to their potential limit than normal people are.The residual plotting can show us the difference between the predicted values and actual values to see how close our model is. A quantile-quantile plot will show us the distribution of the residuals and give us more insight to the residual plot.
+
+The structure of this paper is very simple, the introduction, the data, the methodology, the plot and the analysis regarding the data. We will discuss the entirety of the data. To perform the analysis, we will create 3 visual plots and interpret them. We will create a simple linear regression plot, a residual plot and a quantile-quantile plot. The residual plot and quantile-quantile plot will help us view our errors and determine why linear regression is not appropriate for it.
+
+# Data
+
+## Terminology
+
+Before, we get into the rest of the report, it's important we discuss the terms that the weightlifting community uses. The highest weight that a person can lift for a particular exercise is called a "personal record" or "PR" for short. We will use "PR" to refer to the highest weight a powerlifter can perform. Generally, the terms "powerlifting" and "weightlifting" often get intermixed. Powerlifting is a sport designed to test the relative strength of a person with 3 exercises, squat, deadlift and bench press. These exercises are slow, precise and require raw strength. By contrast "weightlifting" can refer to competitive Olympic weightlifting or general weightlifting as a hobby. Olympic weightlifting contains two exercises, the snatch and "clean and jerk". These lifts usually require technique, speed and motion. General weightlifting refers to amateur weightlifting as a hobby to improve health and physique. Generally, amateur weightlifters focus on slow and deliberate exercise to determine raw strength rather than "Olympic weightlifting" exercises. We will use the term "powerlifter" to reference lifters in the data set.
+
+## Sample Dataset
+
+### Columns
+
+The sample data that was used is a sample of both male and female powerlifters extracted from the Open Powerlifting Data Service [@openPowerLiftingMainSite]. The sample data columns are listed as name, age, AgeClass, bodyweight, squat PR, bench PR, deadlift PR, total PR (kilograms), place and date. The bodyweight of the powerlifter is measured in kilograms. All the PRs scores are measured in kilograms. There is also another set of columns that are ratios of bodyweight and PR. They take the lifter's bodyweight and total PR to form a score to represent the powerlifter's relative strength. An example of these ratios are Wilks, Glossbrenner and Goodlift. [@openPowerLiftingMainDataSource]. Unfortunately, they cannot tell us the nature of the relationship or to predict future results. We will not use them, as we are not concerned with relative strength of the power lifter but the body weight and the PR that they can lift.
+
+Professional power lifters are included in this data set. The sample data consists of 7297 power lifters from an original data set of 634539 power lifters . To report information and scores, they attend official meets and have their scores measured. They are not all representative of all power lifters, only ones who have attended meets. Powerlifters in the sample data set are just male.
+
+Each powerlifter is placed into an AgeClass. The age ranges from 16 to 90 years old. Age is a very important variable in weightlifting. Age gives the weightlifter experience and natural strength. This is done to minimize the bias of age, and to help judge a powerlifter based on his strength. Although age is an important variable, strangely it is not a factor in any of the scores that are presented. In the sample dataset, each AgeClass has 500 lifters. Less than that, then all the lifters are selected.
+
+```{r}
+#| label: tbl1
+#| tbl-cap: "First half of the columns of the openpowerlifting_sample_male"
+#| echo: false
+
+my_data <- read.csv("/Users/vinhemduong/R_Code/Project/openpl_sample_male.csv")
+
+knitr::kable(head(my_data[c(1, 500, 2500, 3500, 7000),c("Name", "Age", "AgeClass", "BodyweightKg", "Squat", "Bench", "Deadlift", "TotalKg")]), booktabs = TRUE)
+```
+
+```{r}
+#| label: tbl2
+#| tbl-cap: "Second half of the columns of the openpowerlifting_sample_male"
+#| echo: false
+
+my_data <- read.csv("/Users/vinhemduong/R_Code/Project/openpl_sample_male.csv")
+
+knitr::kable(head(my_data[,c("Name", "Place", "Dots", "Wilks", "Glossbrenner", "Goodlift", "Date")]), booktabs = TRUE)
+```
+
+The powerlifters consists of different nationalities, different federations and different competitions. It is sample data, but you could argue it is a good representation of powerlifters. Powerlifters who do not practice in official meets will not be listed here. All the powerlifters have been drug-tested, and each of them have competed in a full event. [@openPowerLiftingMainDataSource]. Each lifters has had a valid placement and has not been disqualified due to drugs or cheating. All the lifters have competed in full events "SBD", which is an acronym for squat, bench press and dead lift. Based on information from the dataset, each lifter is using standard equipment such as bare knees, knee sleeves and single-polyester suits.
+
+Squat, Deadlift and Bench press are the core exercises in a power lifting competition. In this competition, each exercise is performed methodically and slowly. The strength of the powerlifter will be the main determinant of the exercise. Body mass plays a key factor in each exercise.
+
+Squat is a lower body exercise that targets the legs and calves. The lifter uses a barbell with weight placed on his upper back to squat down. Squats target the quadriceps, gluteus maximus, hamstrings and calves and engage the core and lower back.
+
+Deadlift is a lower body exercise where the lifter must lift a barbell on the floor and up to his pelvis. According to [@AdjustingModel], lighter body mass is more important for deadlift but it begins to decrease as body mass increases. Deadlift targets the lower back, gluteus maximus and hamstrings
+
+Bench Press is an upperbody exercise, where the lifter lays on a bench and presses a bar upwards and downards on his chest. The bench press targets the triceps, chest and front shoulders
+
+The data that we will use to compare with bodyweight is the column total. The column total represents the sum of all the PRs for squat, bench and dead lift. They represent the highest weight a lifter can perform in an exercise. There is a limitation with this data. For example, a powerlifter might excel at a bench press but do poorly on squat and deadlift. His total score can be equal or greater to other lifters with superior scores in squat and deadlift. Although total is a good representation of total strength, it may not be accurate due to disregarding the nuances of powerlifting. This can skew and misrepresent the data. Nevertheless, total will be used as we want to find a way to represent full strength.
+
+Some data is probably missing. Bench, deadlift and squat do not cover all the exercises that touch every muscle group, notably biceps. Although, these are the main compound exercises used in professional power lifting competitions, they can still give us an inaccurate picture to determine true strength. The sample data doesn't take account female weightlifters, so we can't decide for women.
+
+## Changed Data Sample
+
+To create the best model for our linear regression, we only desire a predictor between body weight and Total PR. However, because of the influence of other factors such as age we must make a new sample where the bias of other factors is minimal. We will create a new "changed data sample" with these in mind.
+
+We choose a certain age group. Age can determine how the body repairs muscles and perform exercises by experience. According to [@PeakStrengthAge], the male strength begins to peak around 24-35. The sample data was chosen as ages 24-39. We have decided to only select two AgeClass, weightlifters in their 24 - 34 and 35-39 age range as data. We chose these age groups as it is where peak strength occurs and most likely when age be less of a factor in the predictor. It will be the best indicative group of all. [@PeakStrengthAge] The changed data sample consists of 1000 male powerlifters.
+
+```{r}
+#| label: powerlifting
+#| tbl-cap: "First rows of openpowerlifting_sample_male"
+#| echo: false
+
+
+my_data <- read.csv("/Users/vinhemduong/R_Code/Project/openpl_sample_male.csv")
+
+my_data <- na.omit(my_data)
+
+fortyGroup <- my_data[my_data$AgeClass == "24-34" | my_data$AgeClass == "35-39",]
+
+knitr::kable(head(fortyGroup[c(1, 250, 500, 750, 900), c("Name", "Age", "AgeClass", "BodyweightKg", "TotalKg")]), booktabs = TRUE)
+```
+
+# Methods
+
+All methods were coded in R [@otherRCode]. All the methods were coded based on the guidelines from [@mainBook]
+
+## Linear Regression
+
+The linear regression line is computed by finding the slope, intercept and plotting a line on the scatterplot. The limitation I feel with this method is the data that we have. It will compute, but it will not tell us exactly if linear regression is right or not alone. Body weight will be our predictor variable and total PR will be our outcome variable. To compute the linear regression line, we will use the Ordinary Least Squares Method (OLS). The OLS is used to compute the 2 regression parameters, where eventually they are fitted into an equation.
+
+$$b_0 = \overline{y} - b_1\overline{x}\\\\\
+b_1 = \frac{\sum(X_i - \overline{X})(Y_i - \overline{Y})}{\sum (X_i - \overline{X})^2}$$
+In this case, body weight is the x variable, and total PR is y.
+
+$$y = \beta_0 + \beta_1x + e\\\\
+\hat{y} = b_0 + b_1\overline{x}$$
+
+The true intercept $\beta_0$ represents the true value of the outcome variable if the predictor variable is 0.
+
+The true slope parameter $\beta_1$ represents the true change in the outcome variable when the unit of the independent variable increases by a one. The error term represents the difference between the dependent variable and the intercept and predictor variables. The error term represents the variability in this equation.
+
+The purpose of this linear regression plot, is to model the scatter plot to see if in this case, a linear regression model is appropriate for predicting total PR based on bodyweight. To truly see that linear regression is not appropriate we want to build the model first and examine it afterwards. After, the OLS is computed we will discuss $b_0$ and $b_1$.
+
+## Residuals
+
+For the residual, we want to find the difference between the predicted value and the actual value.
+
+$$r_i = y_i - \hat{y_i}$$
+
+$y_i$ represents the predicted value, whilst $\hat{y_i}$ represents the actual value. In this case, the predicted value is the total PR based on the equation we build. Whilst, the actual value is the respective value from the data. The difference between the two is the error, which will judge how far off the linear regression model really is.
+
+The reason why we build a residual plot, is to see if a linear regression plot is appropriate for our model. We also want to measure our model's predictions to see that if it is off.
+
+## Quantile-Quantile Plot
+
+The next method we will use is the QQ plot. We can begin by creating quantiles and determine if each residuals is able to fit in it. Residuals that are fitted into a our line demonstrate normality. We want to check if our residuals are normally distributed and to see if there is any deviations from normality.
+
+# Results
+
+## Linear Regression Plot
+
+```{r}
+#| echo: false
+library(ggplot2)
+my_data <- read.csv("/Users/vinhemduong/R_Code/Project/openpl_sample_male.csv")
+
+my_data <- na.omit(my_data)
+
+fortyGroup <- my_data[my_data$AgeClass == "24-34" | my_data$AgeClass == "35-39",]
+squat <- fortyGroup$Squat
+bench <- fortyGroup$Bench
+deadlift <- fortyGroup$Deadlift
+weight <- fortyGroup$BodyweightKg
+#wilks <- fortyGroup$Wilks
+#dots <- fortyGroup$Dots
+total <- fortyGroup$TotalKg
+weightPounds <- fortyGroup$BodyweightKg * 2.20462
+totalPounds <- fortyGroup$TotalKg * 2.20462
+
+
+mod <- lm(formula = total ~ weight)
+
+intercept <- mod$coefficients[1]
+slope <- mod$coefficients[2]
+
+ggp <- ggplot(data = fortyGroup, aes(x = weight, y = total)) +
+  geom_point() + labs(title = "Age:(24 - 39) Male PowerLifters Bodyweight Kg vs Total Kg", x ="Bodyweight (KG)", y = "PR Total", caption = (sprintf("Intercept = %.2f, Slope = %.2f\nDegrees of Freedom: %d\nMultiple R-Squared: 0.2312", intercept, slope, 996)))
+
+ggp + geom_abline(intercept = intercept, slope = slope, color = "red")
+#print(summary(mod))
+# 2. Extract the x and y ranges
+#layer_scales(ggp)$x$range$range
+#layer_scales(ggp)$y$range$range
+```
+
+**Figure 1:** This is is the linear regression line for male power lifters aged 24-39 between their bodyweight and their total PR. The plot showcases a positive relationship.
+
+As expected, a positive relationship between body weight and the total personal record exists. The heavier you are the more likely you are able to lift. However, there are some caveats here. It's not a perfect linear regression model. There seems to be issues with "underfitting". You can get a sense that it doesn't cover everything. There are some lifters with lower body weights than others that have set strong records. By contrast, there are some lifters with higher body weights than others that have lower records than the mean. Most of the points appear to congregate between the range of 50Kg to 150Kg. This is probably because the data sample uses power lifters with body weights in that range not out of a statistical anomaly.
+
+Regardless, the regression line It's still unclear what the limit shall be. If we know that body weight is not enough. We now know we must take into account other factors such as experience and age.
+
+The linear regression equation would be
+
+$$\hat{Y} = 310.30 + 2.85X$$
+
+The $b_0$ parameters represent the expected baseline total PR one can do when he has 0 body weight, but that makes no sense as body weight is clearly needed. The lowest bodyweight of the lifter in the data sample is 54.20. The intercept viewed in this skewed range is 452.8.
+
+The $b_1$ parameter represent the expected increase in PRTotal, once someone increases their bodyweight by 1 unit. If they get an extra kilogram in their weight, they increase their total lifting power by 2.85. There is a caveat to this. If a person gains weight in fat, but not muscle mass they're unlikely to get stronger.
+
+Judging on these 2 facts, the simplicity of the regression line and the regression parameters being somewhat tricky to interpret, linear regression may not be the best model here. You can start to pick holes in this model and we can realize that linear regression is not effective. Of course, we still need more information.
+
+## Residual Plot
+
+```{r}
+#| echo: false
+library(ggplot2)
+my_data <- read.csv("/Users/vinhemduong/R_Code/Project/openpl_sample_male.csv")
+
+my_data <- na.omit(my_data)
+
+fortyGroup <- my_data[my_data$AgeClass == "24-34" | my_data$AgeClass == "35-39",]
+squat <- fortyGroup$Squat
+bench <- fortyGroup$Bench
+deadlift <- fortyGroup$Deadlift
+weight <- fortyGroup$BodyweightKg
+#wilks <- fortyGroup$Wilks
+#dots <- fortyGroup$Dots
+total <- fortyGroup$TotalKg
+weightLbs <- weight * 2.20462
+totalLbs <- total * 2.20462
+
+
+mod <- lm(formula = total ~ weight, na.action = na.exclude)
+
+intercept <- mod$coefficients[1]
+slope <- mod$coefficients[2]
+
+fortyGroup$predicted <- fitted.values(mod)
+fortyGroup$residuals <- residuals(mod)
+ggplot(data = fortyGroup, aes(x = predicted, y = residuals)) + geom_smooth(formula = y ~ x, method = "lm", se = F) + labs(title = "Age:(24 - 39) Male Lifters Residual Plot", x = "Predicted", y = "Residuals") + geom_point(color = "black", alpha = 0.6) + geom_hline(yintercept = 0,linetype = "dashed")
+```
+
+**:Figure 2**: The residual plot for male powerlifters aged (24-39). Most of the residuals plots congregate to the left. The plot is also asymmetric.
+
+Most of the points congregate near the line, but there are still strong differences between the predicted values and actual values. We can also notice that the skew of the residuals is not even whatsoever. Below the 0-line, there are more errors between 0 to -500. Skewness can be an issue as large errors can affect the OLS. This can imply that perhaps a more "curvy" model is appropriate. There could also be issues of heteroskedasticiy as the model appears to congregate and fan out in a way. Let's use a QQ-Plot to find out more information.
+
+## QQ-Plot
+
+```{r}
+#| echo: false
+library(ggplot2)
+my_data <- read.csv("/Users/vinhemduong/R_Code/Project/openpl_sample_male.csv")
+
+my_data <- na.omit(my_data)
+
+fortyGroup <- my_data[my_data$AgeClass == "24-34" | my_data$AgeClass == "35-39",]
+squat <- fortyGroup$Squat
+bench <- fortyGroup$Bench
+deadlift <- fortyGroup$Deadlift
+weight <- fortyGroup$BodyweightKg
+#wilks <- fortyGroup$Wilks
+#dots <- fortyGroup$Dots
+total <- fortyGroup$TotalKg
+
+
+mod <- lm(formula = TotalKg ~ BodyweightKg, data = fortyGroup, na.action = na.exclude)
+
+intercept <- mod$coefficients[1]
+slope <- mod$coefficients[2]
+
+#ggp <- ggplot(data = fortyGroup, aes(x = weight, y = bench)) +
+#geom_point() + labs(title = "Male Lifters Bodyweight Kg vs Bench Press")
+
+#ggp + geom_abline(intercept = intercept, slope = slope, color = "red")
+
+#plot(weight, squat)
+
+#abline(a = mod$coefficients[1], b = mod$coefficients[2])
+
+fortyGroup$predicted <- fitted.values(mod)
+fortyGroup$residuals <- residuals(mod)
+#qplot(fortyGroup$predicted, fortyGroup$residuals) + geom_smooth(method = "lm", se = F)
+
+qqp <- ggplot(data = fortyGroup, aes(sample = residuals)) + stat_qq(color = "steelblue") + stat_qq_line(color = "red", linewidth = 1) + 
+  theme_minimal() + ggtitle("Q-Q Plot") + labs(x = "Quartiles", y = "Residuals")
+qqp
+```
+
+**:Figure 3**: An approximately normal QQ-Plot for the residuals of Male Lifters Aged: (24-39). The beginning and last dots do not fit on the line, which suggests that this is a heavy-tailed distribution.
+
+Having a QQ plot will give us more information about why linear regression is appropriate. The quantile plot showcases us that the majority of the dots hit the line, however at the edges, the dots have a hard time fitting. The residuals are based on heavy-tailed distribution where the ends are larger. This would mean that are more outliers in the normal distribution than expected at both ends or heavier residuals than expected. With the uneven-shape and the residual plot, this could explain the skewness. Large outliers can affect the linear regression model. You can still use linear regression, but it will probably be biased and inaccurate.
+
+# Discussion
+
+It appears that linear regresion model may not be the best way to model the relationship between bodyweight and total PR. The residual plot shows a large error variance and uneven spread of the residuals. There could also be potential issues of heteroskedasicity. This would not suggest that there is relationship between each variable, but how, the linear regression model is ineffective at predicting future total PRs. The QQ plot shows a heavy-tail distribution, which means that outliers or advanced power lifters who can lift much more above their weight are more of the norm than unusual. We can still use linear regression, but it will give us a biased and most likely an inaccurate answer. The linear regression model will be fairly useless in truly predicting Total PR score. In this case, linear regression is only effective at confirming what we knew, but what we can know.
+
+It is hard to model the relationship with linear regression if we don't not consider the right variables. It also seems rather absurd to ask if we can model a relationship between bodyweight and PR, when we already know that other factors such as age, health and biological sex plays a role.
+
+Another limitation is the data source chosen. Although, it is based on experienced power lifters, what can it tell us about muscle growth in general? How about muscle growth for amateur lifters who don't have the time to dedicate to this. For lifestyle choices, muscle growth can come from nutrition or health choices. The data source does not include years of experience or the health of the power lifter.
+
+There could be many other explanations for the lack of a more consistent relationship. Powerlifters can gain muscle mass, but also lose fat which wouldn't change their weight. Some lifters have personal records much higher than others. Most likely with practice, they get use to heavier weights and are able to push beyond their natural limit. Perhaps, because someone with a higher body weight, he assumes that he can lift heavier weights and decides to do so, contributing towards the idea that heavier people can lift heavier weights naturally.
+
+In the future, more plots are needed to ask a similar question like this for other age ranges and female lifters as well. To get a better representation of this relationship, we can try to model it on a quadratic plot, or a plot with more predictors in them. This would make it more effective at prediction than a simple linear regression model. A model that is best appropriate would not be a model that would overfit the data. But one that would minimize errors, acknowledge the complexity of the subject and yet still recognize the simple relationship behind it.
+
+#### GitHub Link
+
+GitHubLink: \<<https://github.com/TennerAndNiner/Math-261A-Project1>\> for details.
+
+<!-- \printbibliography -->

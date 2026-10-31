@@ -4,9 +4,11 @@ Author: Vinhem Duong
 
 Class: Math 261A
 
-Date: September 25, 2026 - October 12, 2026
+Date: September 25, 2026 - October 30, 2026
 
 Updated Version Included: Project1 Version 2 by Oct 12, 2026
+
+Updated Version Included:Project1_FinalVersion2 by Oct 30,2026
 
 
 ## Data
@@ -25,11 +27,4 @@ I've also had assistance with other classmates which I will not name here, but o
 
 This project contains an MIT License.
 
-Project1Version1_2.pdf and Project1Version1_2.qmd are both the main files for Project 1 Version 2. Unfortunately, I wasn't able to use gitignore to remove Project1Version1.
-
-
-This project contains two quarto files, an html file and some sample code for the project. The csv file which was used for the data is included here.
-
-There are actually two quarto files.
-
-\*\*NOTE\*\* The Project1Version1_2 Quarto file is the updated version of the Project1Version1 quarto file. Another difference is that version 1 renders in html, whilst version 1.2 renders in pdf.
+The Project1_FinalVersion2 is the final version of the project.
